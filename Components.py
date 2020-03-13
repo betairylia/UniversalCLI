@@ -1,5 +1,10 @@
+import warnings
+import sys
 import math
+import io
 from termcolor import colored
+from contextlib import redirect_stdout
+
 
 class CLIComponent:
 
@@ -115,3 +120,26 @@ class ProgressBar(CLIComponent):
         # Render string
         final = "%s: %s %s%s%s%s" % (colored(title, *ts), colored(info_str, *ins), colored(l, *bs), colored(f * fill[0], *fs), colored(e * fill[1], *es), colored(r, *bs))
         return final, self.chwidth
+
+class RedirectWarpper(object):
+    def __init__(self, target_cli=None):
+        self.CLI = target_cli
+
+    def __call__(self, func):
+        def warpper(*args, **kwargs):
+            f = io.StringIO()
+            with redirect_stdout(f), warnings.catch_warnings(record=True) as w:
+                # warpped func
+                re = func(*args, **kwargs)
+                # sleep(1)
+            try:
+                while(len(w) != 0):
+                    self.CLI.log('[Warning] ' + warnings._formatwarnmsg_impl(w.pop(0))[:-1])
+                if(f.getvalue() != ''):
+                    lines = f.getvalue().splitlines()
+                    for line in lines:
+                        self.CLI.log('[Output] ' + line)
+            except AttributeError:
+                print('CLI does not exist.')
+            return re
+        return warpper
