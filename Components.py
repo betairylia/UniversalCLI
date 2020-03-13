@@ -11,9 +11,9 @@ class CLIComponent:
         self.content = 'EMPTY COMPONENT'
         self.lenth = len(self.content)
 
-    def setContent(self, content, lenth):
+    def setContent(self, content, lenth = None):
         self.content = content
-        self.lenth = lenth
+        self.lenth = lenth or len(content)
 
     def render(self):
         return self.content, self.lenth
@@ -45,6 +45,19 @@ class CLIComponent:
 
         return "%s%s%s" % (self.padchar * pad[0], string, self.padchar * pad[1]) 
 
+class Styled(CLIComponent):
+
+    def __init__(self, chwidth = 80, align = 'left', padchar = ' ', style = (None, None, None)):
+        super().__init__(chwidth, align, padchar)
+        self.style = style
+
+    def setContent(self, content):
+        self.content = colored(content, *self.style)
+        self.lenth = len(content)
+
+    def __call__(self, content):
+        self.setContent(content)
+
 class ProgressBar(CLIComponent):
 
     def __init__(
@@ -73,6 +86,15 @@ class ProgressBar(CLIComponent):
     
     def updateProgressInc(self, increment = 1):
         self.cur += increment
+
+    def reset(self):
+        self.cur = 0
+
+    def __call__(self, cur, tot, title = None, info = None):
+        self.cur = cur
+        self.tot = tot
+        if title: self.title = title
+        if info:  self.info_foo = info
 
     def render(self):
         

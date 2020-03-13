@@ -2,11 +2,13 @@ import colorama
 from termcolor import colored, cprint
 from colorama import Cursor, Fore, Back, Style
 from time import sleep
-from Components import *
+from .Components import *
+import random
+import os
 
 class CLIClass():
 
-    def init(self, components = [], width = 80, title = ' Untitled ', footer = ' UCLI v0.01 ~ ' + colored("ft. Manaka ", 'cyan'), borderstyle = ('grey', None, ['bold'])):
+    def init(self, components = [], width = 80, title = ' Untitled ', footer = None, borderstyle = ('grey', None, ['bold'])):
 
         self.components = components
         self.height = len(self.components)
@@ -16,9 +18,15 @@ class CLIClass():
         self.title = title
         self.footer = footer
 
+        if self.footer is None:
+            self.footer = ' UCLI v0.01 ~ ' + (colored("ft. Manaka ", 'cyan') if random.random() > 0.5 else colored("ft. Mira ", 'yellow'))
+
         self.heightwb = self.height + 2
         self.widthwb = self.width + 4
         self.cnt = 0
+
+        os.system(r"printf '\033]2;%s\033\'" + "'%s'" % (title))
+        print("")
 
         self.render(self.heightwb + 1) # initialize
 
