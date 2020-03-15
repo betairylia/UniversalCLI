@@ -2,9 +2,9 @@ from CLI import CLI
 from Components import *
 
 temp = "A.jpg"
-a = ProgressBar(tot=20, title = "RANDOM bar", info = lambda cur, tot: '%6.2f - %5s' % (cur / tot * 100.0, temp))
+a = ProgressBar(tot=20, title = "RANDOM bar", preset='magic', info = lambda cur, tot: '%6.2f - %5s' % (cur / tot * 100.0, temp))
 b = CLIComponent(align = 'center')
-CLI.init([[a], [b]])
+CLI.init([[a], [b]], borderstyle = ('magenta', None, ['bold']))
 
 @RedirectWarpper(target_cli=CLI)
 def foo1(j):

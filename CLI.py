@@ -75,6 +75,7 @@ class CLIClass():
     def log(self, string, offset = 0):
 
         self.clear(offset)
+        
         start = ""
         if string.startswith('[Output]'):
             #start = colored("[Output]", 'cyan')
@@ -83,6 +84,7 @@ class CLIClass():
         elif string.startswith('[Warning]'):
             start = colored("[Warning]", 'yellow')
             string = string[10:]
+        
         print(start, string)
         self.render(self.heightwb + 1)
 

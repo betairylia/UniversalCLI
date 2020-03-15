@@ -69,6 +69,7 @@ class ProgressBar(CLIComponent):
         self, chwidth = 80, 
         cur = 0, tot = 100,
         left = '<', right = '>', fill = '=', empty = ' ',
+        preset = None,
         borderstyle = (None, None, None), 
         fillstyle = (None, None, None),
         emptystyle = (None, None, None),
@@ -81,7 +82,21 @@ class ProgressBar(CLIComponent):
         super().__init__(chwidth, 'center')
         self.cur = cur
         self.tot = tot
-        self.charset = [left, right, fill, empty]
+
+        self.presets = {'classic': ['<', '>', '=', ' '], 
+                        'rect': ['|', '|', '\u25A7', '\u25A1'], 
+                        'shades': ['|', '|', '\u2588', '\u2591'],
+                        'magic': ['|', '|', '\u2605', '\u2606'],
+                        'wtf': ['|', '|', '\u5B8C', '\u2F0D'],
+                        'wtf2': ['|', '|', '\u3048', '\u3047'],
+                        'wtf3': ['[', ']', '\u70EB', '  ']}
+        if preset is not None and preset in self.presets:
+            self.charset = self.presets[preset]
+            if preset.startswith('wtf'):
+                self.chwidth = int(self.chwidth / 1.45)
+        else:
+            self.charset = [left, right, fill, empty]
+
         self.style = [borderstyle, fillstyle, emptystyle, titlestyle, infostyle]
         self.title = title
         self.info_foo = info
