@@ -136,15 +136,15 @@ class ProgressBar(CLIComponent):
         final = "%s: %s %s%s%s%s" % (colored(title, *ts), colored(info_str, *ins), colored(l, *bs), colored(f * fill[0], *fs), colored(e * fill[1], *es), colored(r, *bs))
         return final, self.chwidth
 
-class RedirectWarpper(object):
+class RedirectWrapper(object):
     def __init__(self, target_cli=None):
         self.CLI = target_cli
 
     def __call__(self, func):
-        def warpper(*args, **kwargs):
+        def wrapper(*args, **kwargs):
             f = io.StringIO()
             with redirect_stdout(f), warnings.catch_warnings(record=True) as w:
-                # warpped func
+                # wrapped func
                 re = func(*args, **kwargs)
                 # sleep(1)
             try:
@@ -157,4 +157,4 @@ class RedirectWarpper(object):
             except AttributeError:
                 print('CLI does not exist.')
             return re
-        return warpper
+        return wrapper

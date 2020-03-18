@@ -6,7 +6,7 @@ a = ProgressBar(tot=20, title = "RANDOM bar", preset='magic', info = lambda cur,
 b = CLIComponent(align = 'center')
 CLI.init([[a], [b]], borderstyle = ('magenta', None, ['bold']))
 
-@RedirectWarpper(target_cli=CLI)
+@RedirectWrapper(target_cli=CLI)
 def foo1(j):
     if(j % 2 == 0):
         print("Loss = MAGIC")
