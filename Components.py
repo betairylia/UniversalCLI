@@ -1,5 +1,10 @@
+import warnings
+import sys
 import math
+import io
 from termcolor import colored
+from contextlib import redirect_stdout
+
 
 class CLIComponent:
 
@@ -64,6 +69,7 @@ class ProgressBar(CLIComponent):
         self, chwidth = 80, 
         cur = 0, tot = 100,
         left = '<', right = '>', fill = '=', empty = ' ',
+        preset = None,
         borderstyle = (None, None, None), 
         fillstyle = (None, None, None),
         emptystyle = (None, None, None),
@@ -76,7 +82,21 @@ class ProgressBar(CLIComponent):
         super().__init__(chwidth, 'center')
         self.cur = cur
         self.tot = tot
-        self.charset = [left, right, fill, empty]
+
+        self.presets = {'classic': ['<', '>', '=', ' '], 
+                        'rect': ['|', '|', '\u25A7', '\u25A1'], 
+                        'shades': ['|', '|', '\u2588', '\u2591'],
+                        'magic': ['|', '|', '\u2605', '\u2606'],
+                        'wtf': ['|', '|', '\u5B8C', '\u2F0D'],
+                        'wtf2': ['|', '|', '\u3048', '\u3047'],
+                        'wtf3': ['[', ']', '\u70EB', '  ']}
+        if preset is not None and preset in self.presets:
+            self.charset = self.presets[preset]
+            if preset.startswith('wtf'):
+                self.chwidth = int(self.chwidth / 1.45)
+        else:
+            self.charset = [left, right, fill, empty]
+
         self.style = [borderstyle, fillstyle, emptystyle, titlestyle, infostyle]
         self.title = title
         self.info_foo = info
@@ -115,3 +135,26 @@ class ProgressBar(CLIComponent):
         # Render string
         final = "%s: %s %s%s%s%s" % (colored(title, *ts), colored(info_str, *ins), colored(l, *bs), colored(f * fill[0], *fs), colored(e * fill[1], *es), colored(r, *bs))
         return final, self.chwidth
+
+class RedirectWrapper(object):
+    def __init__(self, target_cli=None):
+        self.CLI = target_cli
+
+    def __call__(self, func):
+        def wrapper(*args, **kwargs):
+            f = io.StringIO()
+            with redirect_stdout(f), warnings.catch_warnings(record=True) as w:
+                # wrapped func
+                re = func(*args, **kwargs)
+                # sleep(1)
+            try:
+                while(len(w) != 0):
+                    self.CLI.log('[Warning] ' + warnings._formatwarnmsg_impl(w.pop(0))[:-1])
+                if(f.getvalue() != ''):
+                    lines = f.getvalue().splitlines()
+                    for line in lines:
+                        self.CLI.log('[Output] ' + line)
+            except AttributeError:
+                print('CLI does not exist.')
+            return re
+        return wrapper
