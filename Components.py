@@ -11,12 +11,20 @@ class CLIComponent:
         self.content = 'EMPTY COMPONENT'
         self.lenth = len(self.content)
 
+        self.pCLI = None
+        self.refresh()
+
     def setContent(self, content, lenth = None):
         self.content = content
         self.lenth = lenth or len(content)
+        self.refresh()
 
     def render(self):
         return self.content, self.lenth
+
+    def refresh(self):
+        if self.pCLI is not None:
+            self.pCLI.updateRender()
 
     def __repr__(self):
         
@@ -50,10 +58,12 @@ class Styled(CLIComponent):
     def __init__(self, chwidth = 80, align = 'left', padchar = ' ', style = (None, None, None)):
         super().__init__(chwidth, align, padchar)
         self.style = style
+        self.refresh()
 
     def setContent(self, content):
         self.content = colored(content, *self.style)
         self.lenth = len(content)
+        self.refresh()
 
     def __call__(self, content):
         self.setContent(content)
@@ -80,21 +90,26 @@ class ProgressBar(CLIComponent):
         self.style = [borderstyle, fillstyle, emptystyle, titlestyle, infostyle]
         self.title = title
         self.info_foo = info
+        self.refresh()
     
     def updateProgress(self, cur):
         self.cur = cur
+        self.refresh()
     
     def updateProgressInc(self, increment = 1):
         self.cur += increment
+        self.refresh()
 
     def reset(self):
         self.cur = 0
+        self.refresh()
 
     def __call__(self, cur, tot, title = None, info = None):
         self.cur = cur
         self.tot = tot
         if title: self.title = title
         if info:  self.info_foo = info
+        self.refresh()
 
     def render(self):
         

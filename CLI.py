@@ -25,6 +25,11 @@ class CLIClass():
         self.widthwb = self.width + 4
         self.cnt = 0
 
+        # register pCLI for components
+        for line in components:
+            for c in line:
+                c.pCLI = self
+
         os.system(r"printf '\033]2;%s\033\'" + "'%s'" % (title))
         print("")
 
@@ -60,6 +65,10 @@ class CLIClass():
         print("%s" % Cursor.FORWARD(30), end = '')
         print(self.footer)
         # print("%s" % Cursor.DOWN(), end = '')
+    
+    def updateRender(self):
+        self.update()
+        self.render()
 
     def clear(self, offset = 0):
 
