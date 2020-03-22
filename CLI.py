@@ -2,7 +2,7 @@ import colorama
 from termcolor import colored, cprint
 from colorama import Cursor, Fore, Back, Style
 from time import sleep
-from .Components import *
+from Components import *
 import random
 import os
 
@@ -84,7 +84,17 @@ class CLIClass():
     def log(self, string, offset = 0):
 
         self.clear(offset)
-        print(string)
+        
+        start = ""
+        if string.startswith('[Output]'):
+            #start = colored("[Output]", 'cyan')
+            #string = string[9:]
+            pass
+        elif string.startswith('[Warning]'):
+            start = colored("[Warning]", 'yellow')
+            string = string[10:]
+        
+        print(start, string)
         self.render(self.heightwb + 1)
 
 CLI = CLIClass()
